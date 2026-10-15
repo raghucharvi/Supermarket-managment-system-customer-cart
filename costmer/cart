@@ -1,0 +1,160 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ITEMS 20
+
+struct Item {
+    int id;
+    char name[50];
+    float price;
+    int quantity;
+};
+
+struct Customer {
+    char name[50];
+    int customerId;
+};
+
+struct Cart {
+    struct Item items[MAX_ITEMS];
+    int count;
+};
+
+void addItem(struct Cart *cart)
+{
+    if (cart->count >= MAX_ITEMS) {
+        printf("\nCart is full!\n");
+        return;
+    }
+
+    printf("\nEnter Item ID: ");
+    scanf("%d", &cart->items[cart->count].id);
+
+    printf("Enter Item Name: ");
+    scanf(" %[^\n]", cart->items[cart->count].name);
+
+    printf("Enter Price: ");
+    scanf("%f", &cart->items[cart->count].price);
+
+    printf("Enter Quantity: ");
+    scanf("%d", &cart->items[cart->count].quantity);
+
+    cart->count++;
+
+    printf("\nItem added to cart successfully!\n");
+}
+
+void displayCart(struct Cart *cart)
+{
+    int i;
+    float total = 0;
+
+    if (cart->count == 0) {
+        printf("\nCart is empty!\n");
+        return;
+    }
+
+    printf("\n---------- CUSTOMER CART ----------\n");
+    printf("ID\tName\t\tPrice\tQty\tAmount\n");
+
+    for (i = 0; i < cart->count; i++) {
+        float amount = cart->items[i].price *
+                       cart->items[i].quantity;
+
+        printf("%d\t%-15s %.2f\t%d\t%.2f\n",
+               cart->items[i].id,
+               cart->items[i].name,
+               cart->items[i].price,
+               cart->items[i].quantity,
+               amount);
+
+        total += amount;
+    }
+
+    printf("-----------------------------------\n");
+    printf("Total Amount = Rs. %.2f\n", total);
+}
+
+void removeItem(struct Cart *cart)
+{
+    int id, i, found = 0;
+
+    printf("\nEnter Item ID to remove: ");
+    scanf("%d", &id);
+
+    for (i = 0; i < cart->count; i++) {
+        if (cart->items[i].id == id) {
+            found = 1;
+
+            for (int j = i; j < cart->count - 1; j++) {
+                cart->items[j] = cart->items[j + 1];
+            }
+
+            cart->count--;
+
+            printf("Item removed from cart!\n");
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Item not found in cart!\n");
+    }
+}
+
+int main()
+{
+    struct Customer customer;
+    struct Cart cart;
+
+    int choice;
+
+    cart.count = 0;
+
+    printf("========== SUPERMARKET MANAGEMENT SYSTEM ==========\n");
+
+    printf("\nEnter Customer ID: ");
+    scanf("%d", &customer.customerId);
+
+    printf("Enter Customer Name: ");
+    scanf(" %[^\n]", customer.name);
+
+    do {
+        printf("\n\n========== CUSTOMER/CART MENU ==========\n");
+        printf("Customer ID   : %d\n", customer.customerId);
+        printf("Customer Name : %s\n", customer.name);
+
+        printf("\n1. Add Item to Cart");
+        printf("\n2. Display Cart");
+        printf("\n3. Remove Item from Cart");
+        printf("\n4. Exit");
+
+        printf("\n\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+
+            case 1:
+                addItem(&cart);
+                break;
+
+            case 2:
+                displayCart(&cart);
+                break;
+
+            case 3:
+                removeItem(&cart);
+                break;
+
+            case 4:
+                printf("\nThank you for shopping!\n");
+                break;
+
+            default:
+                printf("\nInvalid choice! Try again.\n");
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
